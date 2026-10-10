@@ -11,13 +11,13 @@
 </head>
 <body>
 
-    <!-- التنبيهات العائمة المحسنة (Toast) -->
+    <!-- التنبيهات العائمة (Toast) -->
     <div id="toastNotification" class="toast"></div>
 
     <!-- 1. شاشة تسجيل الدخول -->
     <div id="loginScreen" class="app-screen">
         <div class="auth-glow-bg"></div>
-        <div class="auth-box">
+        <div class="auth-box glass-card">
             <div id="loginLogoPreview" class="ams-logo-circle large">
                 <div class="logo-ams-text">A<span>M</span>S</div>
                 <div class="red-line"></div>
@@ -27,20 +27,20 @@
             
             <div class="form-group">
                 <label>البريد الإلكتروني</label>
-                <input type="email" id="inputEmail" placeholder="أدخل البريد الإلكتروني" autocomplete="off" value="">
+                <input type="email" id="inputEmail" class="glass-input" placeholder="أدخل البريد الإلكتروني" autocomplete="off" value="">
             </div>
             
             <div class="form-group password-group">
                 <label>كلمة المرور</label>
                 <div class="password-wrapper">
-                    <input type="password" id="inputPass" placeholder="أدخل كلمة المرور" autocomplete="new-password" value="">
+                    <input type="password" id="inputPass" class="glass-input" placeholder="أدخل كلمة المرور" autocomplete="new-password" value="">
                     <button type="button" class="toggle-pass-btn" id="togglePassBtn" onclick="togglePasswordVisibility()">
                         <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>
                 </div>
             </div>
 
-            <button class="btn btn-danger" onclick="processLogin()">تسجيل الدخول</button>
+            <button class="btn btn-danger btn-ripple" onclick="processLogin()">تسجيل الدخول</button>
         </div>
     </div>
 
@@ -58,19 +58,35 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button class="btn-nav" onclick="switchView('public')">🌐 عرض الموقع</button>
-                <button class="btn-logout" onclick="logoutAdmin()">تسجيل خروج</button>
+                <button class="btn-nav btn-ripple" onclick="switchView('public')">🌐 عرض الموقع</button>
+                <button class="btn-logout btn-ripple" onclick="logoutAdmin()">تسجيل خروج</button>
             </div>
         </header>
 
         <main class="main-container">
-            <!-- تغيير الشعار -->
-            <div class="glass-panel logo-card-panel">
-                <div class="panel-title-badge red">⚙️ إعدادات الهوية</div>
-                <h3>تغيير شعار الموقع (AMS)</h3>
-                <p class="panel-desc">اختر صورة الشعار مباشرة من استوديو الهاتف لتطبيقها فوراً.</p>
-                <div class="file-upload-wrapper">
-                    <input type="file" id="siteLogoInput" accept="image/*" onchange="uploadSiteLogo(event)">
+            <!-- كروت الإعدادات والنسخ الاحتياطي -->
+            <div class="admin-top-grid">
+                <!-- تغيير الشعار -->
+                <div class="glass-panel logo-card-panel">
+                    <div class="panel-title-badge red">⚙️ إعدادات الهوية</div>
+                    <h3>شعار الموقع (AMS)</h3>
+                    <p class="panel-desc">اختر صورة الشعار مباشرة من الاستوديو لتطبيقها فوراً.</p>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="siteLogoInput" class="glass-file" accept="image/*" onchange="uploadSiteLogo(event)">
+                    </div>
+                </div>
+
+                <!-- النسخ الاحتياطي واسترجاع البيانات -->
+                <div class="glass-panel backup-card-panel">
+                    <div class="panel-title-badge red">💾 إدارة البيانات والنسخ الاحتياطي</div>
+                    <h3>النسخ الاحتياطي (JSON)</h3>
+                    <p class="panel-desc">قم بتنزيل نسخة احتياطية لحماية بيانات النزالات والتصويطات.</p>
+                    <div class="backup-actions">
+                        <button class="btn btn-secondary btn-ripple" onclick="exportData()">📥 تصدير البيانات</button>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="importFileInput" class="glass-file" accept=".json" onchange="importData(event)">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -82,34 +98,34 @@
                 <div class="fighters-form-grid">
                     <!-- المقاتل الأول -->
                     <div class="fighter-box-input corner-red">
-                        <div class="corner-tag red">الركن الأيمن</div>
-                        <div class="form-group"><label>الاسم الكامل</label><input type="text" id="p1Name" placeholder="اسم المقاتل"></div>
-                        <div class="form-group"><label>اللقب</label><input type="text" id="p1Nickname" placeholder="مثال: The Iron Man"></div>
-                        <div class="form-group"><label>اسم النادي / الجيم</label><input type="text" id="p1Club" placeholder="مثال: Tiger Gym"></div>
-                        <div class="form-group"><label>رابط إنستغرام</label><input type="url" id="p1Insta" placeholder="https://instagram.com/username"></div>
-                        <div class="form-group"><label>العمر</label><input type="number" id="p1Age" placeholder="مثال: 16"></div>
-                        <div class="form-group"><label>الوزن (kg)</label><input type="number" step="0.1" id="p1Weight" placeholder="مثال: 63.5"></div>
-                        <div class="form-group"><label>الطول (cm)</label><input type="number" id="p1Height" placeholder="مثال: 170"></div>
-                        <div class="form-group"><label>صورة المقاتل</label><input type="file" id="p1ImgFile" accept="image/*"></div>
+                        <div class="corner-tag red">الركن الأيمن (Red Corner)</div>
+                        <div class="form-group"><label>الاسم الكامل</label><input type="text" id="p1Name" class="glass-input" placeholder="اسم المقاتل"></div>
+                        <div class="form-group"><label>اللقب</label><input type="text" id="p1Nickname" class="glass-input" placeholder="مثال: The Iron Man"></div>
+                        <div class="form-group"><label>اسم النادي / الجيم</label><input type="text" id="p1Club" class="glass-input" placeholder="مثال: Tiger Gym"></div>
+                        <div class="form-group"><label>رابط إنستغرام</label><input type="url" id="p1Insta" class="glass-input" placeholder="https://instagram.com/username"></div>
+                        <div class="form-group"><label>العمر</label><input type="number" id="p1Age" class="glass-input" placeholder="مثال: 16"></div>
+                        <div class="form-group"><label>الوزن (kg)</label><input type="number" step="0.1" id="p1Weight" class="glass-input" placeholder="مثال: 63.5"></div>
+                        <div class="form-group"><label>الطول (cm)</label><input type="number" id="p1Height" class="glass-input" placeholder="مثال: 170"></div>
+                        <div class="form-group"><label>صورة المقاتل</label><input type="file" id="p1ImgFile" class="glass-file" accept="image/*"></div>
                     </div>
 
                     <!-- المقاتل الثاني -->
                     <div class="fighter-box-input corner-silver">
-                        <div class="corner-tag silver">الركن الأيسر</div>
-                        <div class="form-group"><label>الاسم الكامل</label><input type="text" id="p2Name" placeholder="اسم المقاتل"></div>
-                        <div class="form-group"><label>اللقب</label><input type="text" id="p2Nickname" placeholder="مثال: The Shadow"></div>
-                        <div class="form-group"><label>اسم النادي / الجيم</label><input type="text" id="p2Club" placeholder="مثال: Lion Gym"></div>
-                        <div class="form-group"><label>رابط إنستغرام</label><input type="url" id="p2Insta" placeholder="https://instagram.com/username"></div>
-                        <div class="form-group"><label>العمر</label><input type="number" id="p2Age" placeholder="مثال: 16"></div>
-                        <div class="form-group"><label>الوزن (kg)</label><input type="number" step="0.1" id="p2Weight" placeholder="مثال: 63.5"></div>
-                        <div class="form-group"><label>الطول (cm)</label><input type="number" id="p2Height" placeholder="مثال: 170"></div>
-                        <div class="form-group"><label>صورة المقاتل</label><input type="file" id="p2ImgFile" accept="image/*"></div>
+                        <div class="corner-tag silver">الركن الأيسر (Silver Corner)</div>
+                        <div class="form-group"><label>الاسم الكامل</label><input type="text" id="p2Name" class="glass-input" placeholder="اسم المقاتل"></div>
+                        <div class="form-group"><label>اللقب</label><input type="text" id="p2Nickname" class="glass-input" placeholder="مثال: The Shadow"></div>
+                        <div class="form-group"><label>اسم النادي / الجيم</label><input type="text" id="p2Club" class="glass-input" placeholder="مثال: Lion Gym"></div>
+                        <div class="form-group"><label>رابط إنستغرام</label><input type="url" id="p2Insta" class="glass-input" placeholder="https://instagram.com/username"></div>
+                        <div class="form-group"><label>العمر</label><input type="number" id="p2Age" class="glass-input" placeholder="مثال: 16"></div>
+                        <div class="form-group"><label>الوزن (kg)</label><input type="number" step="0.1" id="p2Weight" class="glass-input" placeholder="مثال: 63.5"></div>
+                        <div class="form-group"><label>الطول (cm)</label><input type="number" id="p2Height" class="glass-input" placeholder="مثال: 170"></div>
+                        <div class="form-group"><label>صورة المقاتل</label><input type="file" id="p2ImgFile" class="glass-file" accept="image/*"></div>
                     </div>
                 </div>
 
                 <div class="form-actions-row">
-                    <button class="btn btn-danger btn-submit-match" id="submitMatchBtn" onclick="saveMatchHandler()">🚀 حفظ ونشر النزال</button>
-                    <button class="btn btn-secondary btn-cancel-edit" id="cancelEditBtn" style="display:none;" onclick="resetMatchForm()">إلغاء التعديل</button>
+                    <button class="btn btn-danger btn-submit-match btn-ripple" id="submitMatchBtn" onclick="saveMatchHandler()">🚀 حفظ ونشر النزال</button>
+                    <button class="btn btn-secondary btn-cancel-edit btn-ripple" id="cancelEditBtn" style="display:none;" onclick="resetMatchForm()">إلغاء التعديل</button>
                 </div>
             </div>
 
@@ -137,8 +153,8 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button id="backAdminBtn" class="btn-nav" style="display:none;" onclick="switchView('admin')">⚙️ لوحة الإدارة</button>
-                <button class="btn-logout" onclick="logoutAdmin()">تسجيل خروج</button>
+                <button id="backAdminBtn" class="btn-nav btn-ripple" style="display:none;" onclick="switchView('admin')">⚙️ لوحة الإدارة</button>
+                <button class="btn-logout btn-ripple" onclick="logoutAdmin()">تسجيل خروج</button>
             </div>
         </header>
 

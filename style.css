@@ -1,115 +1,113 @@
 :root {
-    --bg-dark: #030305;
-    --card-bg: #09090f;
-    --card-border: #1a1a2e;
+    --bg-dark: #020204;
+    --card-bg: rgba(10, 10, 18, 0.85);
+    --card-border: rgba(255, 255, 255, 0.08);
     --red-ams: #e50914;
-    --red-glow: rgba(229, 9, 20, 0.6);
+    --red-glow: rgba(229, 9, 20, 0.55);
     --silver-main: #f1f5f9;
-    --silver-bright: #ffffff;
     --silver-muted: #94a3b8;
-    --silver-border: #222234;
+    --easing-fast: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 * { 
     box-sizing: border-box; 
     font-family: 'Tajawal', sans-serif; 
     -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
 }
-
-input:focus, select:focus, textarea:focus {
-    outline: none !important;
-    border-color: var(--red-ams) !important;
-    box-shadow: 0 0 15px var(--red-glow) !important;
-}
-
-button:focus { outline: none !important; box-shadow: none !important; }
 
 body {
     background-color: var(--bg-dark);
-    color: var(--silver-bright);
+    color: var(--silver-main);
     margin: 0; padding: 0;
     direction: rtl; min-height: 100vh;
     overflow-x: hidden;
-    will-change: transform;
 }
 
 .app-screen { width: 100%; min-height: 100vh; position: relative; }
 
+/* تأثيرات التفاعل السريعة والانسيابية */
+.btn-ripple, .vote-btn, .btn-card-action, .match-card, .fighter-avatar-skew {
+    transition: transform 0.22s var(--easing-fast), box-shadow 0.22s var(--easing-fast), background-color 0.22s var(--easing-fast), border-color 0.22s var(--easing-fast);
+}
+
+.btn-ripple:active, .vote-btn:active, .btn-card-action:active {
+    transform: scale(0.95) !important;
+}
+
 /* شاشة تسجيل الدخول */
 #loginScreen {
     display: flex; justify-content: center; align-items: center;
-    background: radial-gradient(circle at center, #240306 0%, var(--bg-dark) 85%);
+    background: radial-gradient(circle at center, #1a0204 0%, var(--bg-dark) 85%);
     padding: 20px; position: relative; overflow: hidden;
 }
 
 .auth-glow-bg {
-    position: absolute; width: 350px; height: 350px;
+    position: absolute; width: 420px; height: 420px;
     background: radial-gradient(circle, rgba(229, 9, 20, 0.35) 0%, transparent 70%);
     top: 50%; left: 50%; transform: translate(-50%, -50%);
-    pointer-events: none; animation: pulseGlow 3s infinite alternate;
+    pointer-events: none; animation: pulseGlow 3.5s infinite alternate ease-in-out;
 }
 
 @keyframes pulseGlow {
-    0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.5; }
-    100% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.95; }
+    0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.4; }
+    100% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.85; }
 }
 
 .auth-box {
-    background: rgba(10, 10, 16, 0.95);
-    backdrop-filter: blur(25px);
+    background: rgba(8, 8, 14, 0.94);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(229, 9, 20, 0.3);
     border-radius: 24px; padding: 36px 26px;
     width: 100%; max-width: 390px;
-    text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.95), 0 0 20px rgba(229, 9, 20, 0.15);
+    text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 25px rgba(229, 9, 20, 0.15);
     position: relative; z-index: 2;
-    animation: fadeIn 0.4s ease;
+    animation: slideUpFade 0.4s var(--easing-fast);
 }
 
-.auth-box h2 { margin: 12px 0 4px 0; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; color: #fff; }
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-box h2 { margin: 12px 0 4px 0; font-size: 20px; font-weight: 900; color: #fff; }
 .auth-box p { color: var(--silver-muted); font-size: 12px; margin-bottom: 24px; }
 
-/* أيقونة العين داخل الحقل */
 .password-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
 .password-wrapper input { width: 100%; padding-left: 45px; }
 .toggle-pass-btn {
     position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
     background: transparent !important; border: none !important; cursor: pointer; padding: 0;
     color: var(--silver-muted) !important; display: flex; align-items: center; justify-content: center;
-    z-index: 10;
 }
 .toggle-pass-btn:hover { color: #fff !important; }
 
-/* الشعار الأسود الفخم (بدون أي إطار أو دائرة حمراء خارجية) */
+/* الشعار الفخم */
 .ams-logo-circle {
-    width: 52px; height: 52px;
-    background-color: #000000;
-    border-radius: 50%;
-    display: flex; justify-content: center; align-items: center;
-    position: relative; overflow: hidden;
-    flex-shrink: 0;
+    width: 52px; height: 52px; background-color: #000;
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    position: relative; overflow: hidden; flex-shrink: 0;
     background-size: cover; background-position: center;
-    border: none !important; 
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8) !important;
 }
 
-.ams-logo-circle.header-logo { width: 70px; height: 70px; }
+.ams-logo-circle.header-logo { width: 68px; height: 68px; }
 .ams-logo-circle.large { width: 90px; height: 90px; margin: 0 auto 14px auto; }
 
 .logo-ams-text {
     font-weight: 900; font-style: italic; font-size: 19px;
     letter-spacing: -1.5px; color: #e5e7eb;
 }
-
-.ams-logo-circle.header-logo .logo-ams-text { font-size: 25px; }
-.ams-logo-circle.large .logo-ams-text { font-size: 29px; }
+.ams-logo-circle.header-logo .logo-ams-text { font-size: 24px; }
+.ams-logo-circle.large .logo-ams-text { font-size: 28px; }
 .logo-ams-text span { color: var(--red-ams); }
 
 .red-line {
     position: absolute; bottom: 8px; left: 10px;
     width: 13px; height: 3px; background-color: var(--red-ams); border-radius: 2px;
 }
-.ams-logo-circle.header-logo .red-line { bottom: 12px; left: 14px; width: 16px; height: 3.5px; }
-.ams-logo-circle.large .red-line { bottom: 16px; left: 20px; width: 22px; height: 4px; }
+.ams-logo-circle.header-logo .red-line { bottom: 11px; left: 13px; width: 15px; height: 3.5px; }
+.ams-logo-circle.large .red-line { bottom: 15px; left: 18px; width: 20px; height: 4px; }
 
 .ams-logo-circle.has-image .logo-ams-text,
 .ams-logo-circle.has-image .red-line { display: none; }
@@ -117,12 +115,10 @@ body {
 /* الهيدر */
 .main-header {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 20px;
-    background: rgba(3, 3, 5, 0.95);
-    backdrop-filter: blur(15px);
-    border-bottom: 2px solid var(--red-ams);
-    position: sticky; top: 0; z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    padding: 12px 20px; background: rgba(3, 3, 5, 0.94);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 2px solid var(--red-ams); position: sticky; top: 0; z-index: 1000;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.85);
 }
 
 .logo-area { display: flex; align-items: center; gap: 14px; }
@@ -130,23 +126,27 @@ body {
 .brand-title .sub-title { font-size: 10px; color: var(--silver-muted); display: block; }
 
 .header-actions { display: flex; gap: 8px; align-items: center; }
-
 .btn-nav, .btn-logout {
-    border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; padding: 7px 14px; transition: 0.2s;
+    border-radius: 10px; font-size: 11px; font-weight: bold; cursor: pointer; padding: 8px 16px; border: 1px solid transparent;
 }
-.btn-nav { background: #12121c; color: var(--silver-main); border: 1px solid var(--card-border); }
-.btn-nav:hover { background: #1a1a2e; border-color: rgba(229,9,20,0.4); }
-.btn-logout { background: #24080a; color: #ff6b6b; border: 1px solid #5a1217; }
-.btn-logout:hover { background: #350b0f; }
+.btn-nav { background: #12121c; color: var(--silver-main); border-color: var(--card-border); }
+.btn-nav:hover { background: #1a1a2e; border-color: rgba(229,9,20,0.5); box-shadow: 0 0 12px rgba(229, 9, 20, 0.2); }
+.btn-logout { background: #24080a; color: #ff6b6b; border-color: #5a1217; }
+.btn-logout:hover { background: #350b0f; box-shadow: 0 0 12px rgba(255, 107, 107, 0.2); }
 
-.main-container { max-width: 850px; margin: 24px auto; padding: 0 16px; }
+.main-container { max-width: 860px; margin: 24px auto; padding: 0 16px; }
 
-/* الكروت Panels */
+/* تحسينات شبكة الأدمن والبطاقات الزجاجية */
+.admin-top-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px; margin-bottom: 22px;
+}
+
 .glass-panel {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
+    background: var(--card-bg); border: 1px solid var(--card-border);
     border-radius: 20px; padding: 22px; margin-bottom: 22px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.85); position: relative;
+    box-shadow: 0 18px 38px rgba(0,0,0,0.8); position: relative;
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
 }
 
 .panel-title-badge {
@@ -160,76 +160,80 @@ body {
 .panel-desc { font-size: 11px; color: var(--silver-muted); margin: 0 0 14px 0; }
 
 .form-group { margin-bottom: 14px; text-align: right; }
-.form-group label { display: block; font-size: 11px; color: var(--silver-main); margin-bottom: 5px; font-weight: 600; }
+.form-group label { display: block; font-size: 11px; color: var(--silver-main); margin-bottom: 6px; font-weight: 600; }
 
-input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="file"], input[type="url"] {
-    width: 100%; padding: 11px; background: #040406;
-    border: 1px solid var(--card-border); color: #fff; border-radius: 10px; font-size: 12px;
-    transition: 0.2s;
+.glass-input, .glass-file, select {
+    width: 100%; padding: 11px 14px; background: rgba(4, 4, 8, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.09); color: #fff; border-radius: 12px; font-size: 12px;
+    transition: all 0.22s var(--easing-fast);
 }
 
+.glass-input:focus, select:focus {
+    outline: none !important;
+    border-color: var(--red-ams) !important;
+    box-shadow: 0 0 18px var(--red-glow) !important;
+    background: #06060c;
+}
+
+.backup-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+
+/* أركان إدخال المقاتلين بالأدمن */
 .fighters-form-grid { 
     display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
-    gap: 14px; margin-top: 14px;
+    gap: 16px; margin-top: 16px;
 }
 
 .fighter-box-input {
-    background: #050508; padding: 16px; border-radius: 14px;
-    border: 1px solid #1a1a28; position: relative;
+    background: rgba(5, 5, 10, 0.9); padding: 18px; border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06); position: relative;
+    box-shadow: inset 0 1px 3px rgba(255,255,255,0.03);
 }
-
-.fighter-box-input.corner-red { border-top: 3px solid var(--red-ams); }
-.fighter-box-input.corner-silver { border-top: 3px solid var(--silver-main); }
+.fighter-box-input.corner-red { border-top: 3.5px solid var(--red-ams); }
+.fighter-box-input.corner-silver { border-top: 3.5px solid var(--silver-main); }
 
 .corner-tag {
     position: absolute; top: 12px; left: 12px;
     font-size: 9px; font-weight: bold; padding: 3px 8px; border-radius: 6px;
 }
-.corner-tag.red { background: rgba(229, 9, 20, 0.15); color: var(--red-ams); }
-.corner-tag.silver { background: rgba(226, 232, 240, 0.15); color: var(--silver-main); }
+.corner-tag.red { background: rgba(229, 9, 20, 0.15); color: var(--red-ams); border: 1px solid rgba(229, 9, 20, 0.3); }
+.corner-tag.silver { background: rgba(241, 245, 249, 0.15); color: var(--silver-main); border: 1px solid rgba(241, 245, 249, 0.3); }
 
 .form-actions-row { display: flex; gap: 10px; margin-top: 20px; }
 
 .btn {
-    width: 100%; padding: 12px; border-radius: 10px;
-    font-weight: 700; font-size: 12px; border: none; cursor: pointer; transition: 0.2s;
+    width: 100%; padding: 12px; border-radius: 12px;
+    font-weight: 700; font-size: 12px; border: none; cursor: pointer;
 }
 .btn-danger { background: var(--red-ams); color: #fff; box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4); }
-.btn-danger:hover { background: #ff1a26; box-shadow: 0 6px 20px rgba(229, 9, 20, 0.6); }
+.btn-danger:hover { background: #ff1a26; box-shadow: 0 6px 20px rgba(229, 9, 20, 0.65); transform: translateY(-2px); }
 .btn-secondary { background: #161622; color: var(--silver-main); border: 1px solid var(--card-border); }
+.btn-secondary:hover { background: #202032; transform: translateY(-2px); }
 
-/* عناوين الأقسام */
 .section-header { text-align: center; margin: 30px 0 20px 0; }
 .section-header h2 { font-size: 19px; font-weight: 900; margin: 0 0 6px 0; letter-spacing: 0.5px; color: #fff; }
-.header-line { width: 50px; height: 3px; background: var(--red-ams); margin: 0 auto; border-radius: 2px; box-shadow: 0 0 10px var(--red-ams); }
+.header-line { width: 50px; height: 3px; background: var(--red-ams); margin: 0 auto; border-radius: 2px; box-shadow: 0 0 12px var(--red-ams); }
 
-/* شبكة كروت النزالات */
+/* كروت النزالات الكبيرة */
 .matches-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 18px;
+    gap: 20px;
 }
 
 .match-card {
     background: var(--card-bg); border: 1px solid var(--card-border);
-    border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.85);
-    animation: matchCardPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-@keyframes matchCardPop {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    border-radius: 22px; overflow: hidden; box-shadow: 0 16px 36px rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
 
 .match-card:hover {
-    border-color: rgba(229, 9, 20, 0.6);
-    box-shadow: 0 20px 45px rgba(0,0,0,0.9), 0 0 15px rgba(229, 9, 20, 0.2);
+    border-color: rgba(229, 9, 20, 0.55);
+    box-shadow: 0 22px 50px rgba(0,0,0,0.92), 0 0 20px rgba(229, 9, 20, 0.25);
     transform: translateY(-4px);
 }
 
 .match-header-bar {
     background: linear-gradient(90deg, #1f0407 0%, #3a080d 50%, #1f0407 100%);
-    padding: 8px; text-align: center; font-size: 10px; font-weight: 900;
+    padding: 9px; text-align: center; font-size: 10px; font-weight: 900;
     color: var(--red-ams); border-bottom: 1px solid rgba(229, 9, 20, 0.2);
     letter-spacing: 1px;
 }
@@ -237,18 +241,15 @@ input[type="text"], input[type="email"], input[type="password"], input[type="num
 .arena-flex { 
     display: flex; justify-content: space-between; align-items: center; 
     padding: 24px 12px; cursor: pointer; position: relative;
-    background: radial-gradient(circle at center, #09090f 0%, #050508 100%);
+    background: radial-gradient(circle at center, #07070c 0%, #030305 100%);
 }
 
 .fighter-profile { 
     flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; 
-    position: relative;
-    padding: 6px;
+    position: relative; padding: 6px;
 }
 
-/* ==========================================================
-   صورة المقاتل مع إطار أحمر ثابت وناعم ومريح على حواف الـ polygon تماماً
-   ========================================================== */
+/* صورة المقاتل مع الأنيميشن والتوهج المتناغم */
 .fighter-avatar-skew {
     width: 125px; 
     height: 155px;
@@ -258,141 +259,159 @@ input[type="text"], input[type="email"], input[type="password"], input[type="num
     position: relative;
     z-index: 2;
     border: 2px solid var(--red-ams);
-    box-shadow: 0 0 12px rgba(229, 9, 20, 0.4), inset 0 0 8px rgba(0, 0, 0, 0.8);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    box-shadow: 0 0 12px rgba(229, 9, 20, 0.5), inset 0 0 8px rgba(0, 0, 0, 0.8);
 }
 
-/* المقاتل الأول (الأيمن) بنبض هادئ ومنعكس */
 .fighter-profile:first-child .fighter-avatar-skew {
-    animation: gentlePulseA 3s ease-in-out infinite alternate;
+    animation: gentlePulseA 3.2s ease-in-out infinite alternate;
 }
 
-/* المقاتل الثاني (الأيسر) بنبض عكسي متناسق ومريح */
 .fighter-profile:last-child .fighter-avatar-skew {
-    animation: gentlePulseB 3s ease-in-out infinite alternate;
+    animation: gentlePulseB 3.2s ease-in-out infinite alternate;
 }
 
 @keyframes gentlePulseA {
-    0% {
-        box-shadow: 0 0 8px rgba(229, 9, 20, 0.3), inset 0 0 8px rgba(0, 0, 0, 0.8);
-        border-color: rgba(229, 9, 20, 0.5);
-    }
-    100% {
-        box-shadow: 0 0 20px rgba(229, 9, 20, 0.75), inset 0 0 12px rgba(229, 9, 20, 0.2);
-        border-color: #ff3333;
-    }
+    0% { box-shadow: 0 0 8px rgba(229, 9, 20, 0.4), inset 0 0 8px rgba(0, 0, 0, 0.8); border-color: rgba(229, 9, 20, 0.6); }
+    100% { box-shadow: 0 0 22px rgba(229, 9, 20, 0.85), inset 0 0 12px rgba(229, 9, 20, 0.3); border-color: #ff3333; }
 }
 
 @keyframes gentlePulseB {
-    0% {
-        box-shadow: 0 0 20px rgba(229, 9, 20, 0.75), inset 0 0 12px rgba(229, 9, 20, 0.2);
-        border-color: #ff3333;
-    }
-    100% {
-        box-shadow: 0 0 8px rgba(229, 9, 20, 0.3), inset 0 0 8px rgba(0, 0, 0, 0.8);
-        border-color: rgba(229, 9, 20, 0.5);
-    }
+    0% { box-shadow: 0 0 22px rgba(229, 9, 20, 0.85), inset 0 0 12px rgba(229, 9, 20, 0.3); border-color: #ff3333; }
+    100% { box-shadow: 0 0 8px rgba(229, 9, 20, 0.4), inset 0 0 8px rgba(0, 0, 0, 0.8); border-color: rgba(229, 9, 20, 0.6); }
 }
 
 .arena-flex:hover .fighter-avatar-skew {
-    transform: scale(1.06);
-    box-shadow: 0 0 25px rgba(229, 9, 20, 0.85);
+    transform: scale(1.07);
+    box-shadow: 0 0 28px rgba(229, 9, 20, 0.95);
 }
 
+/* تفاصيل النزال القابلة للتوسع بمرونة */
 .match-details-expandable {
-    display: none; padding: 16px;
-    background: #040406; border-top: 1px solid var(--card-border);
-    animation: fadeIn 0.25s ease;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 16px;
+    background: #040406;
+    border-top: 0px solid transparent;
+    transition: max-height 0.35s var(--easing-fast), padding 0.35s var(--easing-fast), border-color 0.35s var(--easing-fast);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: translateY(0); }
+.match-details-expandable.open {
+    max-height: 400px;
+    padding: 16px;
+    border-top: 1px solid var(--card-border);
 }
 
 .details-row { display: flex; justify-content: space-between; gap: 12px; }
 
-/* لوحات تفاصيل المقاتل بشكل متناسق وفخم */
 .details-fighter-info {
     flex: 1; text-align: center; background: linear-gradient(145deg, #0a0a12 0%, #050508 100%);
     padding: 14px 10px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.05);
 }
 
 .details-fighter-info .name { 
     font-weight: 900; color: #fff; font-size: 15px; margin-bottom: 5px; 
     border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 6px;
-    letter-spacing: 0.5px;
 }
 
 .details-fighter-info .nickname {
-    font-size: 11px; color: var(--red-ams); font-weight: bold; margin-bottom: 8px;
-    text-transform: uppercase; letter-spacing: 1px;
+    font-size: 11px; color: var(--red-ams); font-weight: bold; margin-bottom: 8px; text-transform: uppercase;
 }
 
-.details-fighter-info .info-line { 
-    color: var(--silver-main); font-size: 11px; margin-bottom: 5px; font-weight: 600;
-}
+.details-fighter-info .info-line { color: var(--silver-main); font-size: 11px; margin-bottom: 5px; font-weight: 600; }
 .details-fighter-info .info-line span { color: var(--silver-muted); font-weight: normal; }
 
-/* أيقونة إنستغرام المتوهجة والجميلة */
 .fighter-insta-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px;
     background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-    color: #fff;
-    border-radius: 50%;
-    margin-top: 10px;
-    box-shadow: 0 4px 12px rgba(220, 39, 67, 0.45);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    text-decoration: none;
+    color: #fff; border-radius: 50%; margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(220, 39, 67, 0.45); text-decoration: none;
 }
-
-.fighter-insta-badge:hover {
-    transform: scale(1.12);
-    box-shadow: 0 6px 18px rgba(220, 39, 67, 0.7);
-}
+.fighter-insta-badge:hover { transform: scale(1.12); }
 
 .card-actions-bar {
-    display: flex; justify-content: center; gap: 8px; padding: 12px 14px 16px 14px;
+    display: flex; flex-direction: column; gap: 10px; padding: 14px;
     background: #050508; border-top: 1px solid rgba(255, 255, 255, 0.03);
 }
 
+.action-buttons-group { display: flex; justify-content: center; gap: 8px; }
+
 .btn-card-action {
-    padding: 7px 14px; font-size: 11px; font-weight: bold;
-    border-radius: 8px; cursor: pointer; transition: 0.2s; border: 1px solid transparent;
+    padding: 8px 16px; font-size: 11px; font-weight: bold;
+    border-radius: 10px; cursor: pointer; border: 1px solid transparent;
 }
 .btn-card-action.edit { background: #0f172a; color: #38bdf8; border-color: #1e293b; }
-.btn-card-action.edit:hover { background: #1e293b; }
+.btn-card-action.edit:hover { background: #1e293b; box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
 .btn-card-action.delete { background: #24080a; color: #ff6b6b; border-color: #5a1217; }
-.btn-card-action.delete:hover { background: #350b0f; }
+.btn-card-action.delete:hover { background: #350b0f; box-shadow: 0 0 12px rgba(255, 107, 107, 0.2); }
 
-/* تصميم التنبيه العائم السفلي المضمون والمريح */
+/* التصويت المحسن التفاعلي */
+.voting-section {
+    margin: 12px 14px; padding: 14px;
+    background: rgba(8, 8, 14, 0.95);
+    border: 1px solid rgba(229, 9, 20, 0.3);
+    border-radius: 14px;
+    box-shadow: inset 0 0 15px rgba(229, 9, 20, 0.05);
+}
+
+.voting-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+}
+.voting-title { font-size: 11px; color: #fff; font-weight: 900; }
+.voting-total { font-size: 10px; color: var(--silver-muted); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 10px; }
+
+.voting-buttons { display: flex; gap: 10px; margin-bottom: 12px; }
+
+.vote-btn {
+    flex: 1; padding: 10px 8px; font-size: 11px; font-weight: 800;
+    border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer; background: #0d0d16; color: #fff;
+}
+
+.vote-btn.corner-red-btn:hover:not(.active-voted) {
+    background: rgba(229, 9, 20, 0.25); border-color: var(--red-ams);
+    box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); transform: translateY(-2px);
+}
+.vote-btn.corner-silver-btn:hover:not(.active-voted) {
+    background: rgba(241, 245, 249, 0.15); border-color: var(--silver-main);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); transform: translateY(-2px);
+}
+
+.vote-btn.active-voted.corner-red-btn {
+    background: linear-gradient(135deg, #b91c1c, #e50914) !important;
+    border-color: #ff3333 !important; box-shadow: 0 0 18px rgba(229, 9, 20, 0.75) !important;
+}
+.vote-btn.active-voted.corner-silver-btn {
+    background: linear-gradient(135deg, #475569, #94a3b8) !important;
+    border-color: #fff !important; box-shadow: 0 0 18px rgba(255, 255, 255, 0.5) !important;
+}
+
+.vote-progress-bar {
+    width: 100%; height: 9px; background: #040406;
+    border-radius: 10px; overflow: hidden; display: flex;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vote-progress-red { background: linear-gradient(90deg, #991b1b, #e50914); height: 100%; transition: width 0.45s var(--easing-fast); }
+.vote-progress-silver { background: linear-gradient(90deg, #64748b, #f1f5f9); height: 100%; transition: width 0.45s var(--easing-fast); }
+
+.win-method-badge {
+    display: inline-block; background: rgba(229, 9, 20, 0.15);
+    color: var(--red-ams); border: 1px solid rgba(229, 9, 20, 0.4);
+    padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: bold; margin-top: 6px;
+}
+
+.end-match-controls { display: flex; gap: 6px; margin-top: 8px; width: 100%; }
+.end-match-controls select { flex: 1; padding: 6px; font-size: 10px; background: #08080c; }
+
 .toast {
-    position: fixed !important;
-    bottom: -100px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    background: rgba(14, 14, 22, 0.96) !important;
-    backdrop-filter: blur(15px) !important;
-    color: #fff !important;
-    border: 1px solid rgba(229, 9, 20, 0.6) !important;
-    padding: 14px 28px !important;
-    border-radius: 35px !important;
-    font-size: 13px !important;
-    font-weight: bold !important;
-    box-shadow: 0 15px 35px rgba(229, 9, 20, 0.45) !important;
-    z-index: 999999 !important;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    white-space: nowrap !important;
+    position: fixed !important; bottom: -100px !important; left: 50% !important;
+    transform: translateX(-50%) !important; background: rgba(14, 14, 22, 0.96) !important;
+    backdrop-filter: blur(15px) !important; color: #fff !important;
+    border: 1px solid rgba(229, 9, 20, 0.6) !important; padding: 14px 28px !important;
+    border-radius: 35px !important; font-size: 13px !important; font-weight: bold !important;
+    box-shadow: 0 15px 35px rgba(229, 9, 20, 0.45) !important; z-index: 999999 !important;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    opacity: 0 !important; pointer-events: none !important; white-space: nowrap !important;
 }
-
-.toast.show {
-    bottom: 35px !important;
-    opacity: 1 !important;
-}
+.toast.show { bottom: 35px !important; opacity: 1 !important; }

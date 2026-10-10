@@ -1,14 +1,30 @@
 const ADMIN_EMAIL = "jadkoudmani100@gmail.com";
 const ADMIN_PASS = "Jadkoudmani572010";
 
-let matchesDB = JSON.parse(localStorage.getItem('ams_pro_db_v7')) || [];
-let currentCustomLogo = localStorage.getItem('ams_custom_logo') || '';
+// المنيجر الخاص ببيانات التطبيق الموحدة
+let appStorage = JSON.parse(localStorage.getItem('ams_master_db_v8')) || {
+    matches: [],
+    customLogo: '',
+    votes: {},
+    userVotes: {}
+};
+
+let matchesDB = appStorage.matches;
+let currentCustomLogo = appStorage.customLogo;
 let editingMatchIndex = -1;
+
+function persistDB() {
+    appStorage.matches = matchesDB;
+    appStorage.customLogo = currentCustomLogo;
+    try {
+        localStorage.setItem('ams_master_db_v8', JSON.stringify(appStorage));
+    } catch (e) {
+        showToast('تنبيه: الذاكرة ممتلئة! حاول رفع صور أصغر');
+    }
+}
 
 window.addEventListener('DOMContentLoaded', () => {
     applyGlobalLogo();
-
-    // التحقق من حالة تسجيل الدخول السابقة عند فتح الموقع أو عمل Refresh
     const savedRole = localStorage.getItem('ams_current_role');
 
     if (savedRole === 'admin') {
@@ -16,10 +32,6 @@ window.addEventListener('DOMContentLoaded', () => {
     } else if (savedRole === 'user') {
         switchView('public');
     } else {
-        const emailInput = document.getElementById('inputEmail');
-        const passInput = document.getElementById('inputPass');
-        if (emailInput) emailInput.value = '';
-        if (passInput) passInput.value = '';
         switchView('login');
     }
 });
@@ -32,42 +44,12 @@ function showToast(message) {
         document.body.appendChild(toast);
     }
     
-    // فرض الستايل البرمجي بالكامل لضمان ظهوره في الأسفل ومنعه من الصعود للأعلى
-    toast.style.cssText = `
-        position: fixed !important;
-        bottom: -90px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        background: rgba(18, 18, 28, 0.95) !important;
-        backdrop-filter: blur(12px) !important;
-        color: #fff !important;
-        border: 1px solid #e50914 !important;
-        padding: 13px 26px !important;
-        border-radius: 35px !important;
-        font-size: 13px !important;
-        font-weight: bold !important;
-        box-shadow: 0 10px 30px rgba(229, 9, 20, 0.5) !important;
-        z-index: 999999 !important;
-        transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        white-space: nowrap !important;
-        font-family: 'Tajawal', sans-serif !important;
-    `;
-    
     toast.innerText = message;
+    toast.className = 'toast show';
     
-    // إظهار الإشعار من الأسفل
     setTimeout(() => {
-        toast.style.bottom = '35px';
-        toast.style.opacity = '1';
-    }, 20);
-
-    // إخفاء الإشعار بعد 2.8 ثانية
-    setTimeout(() => {
-        toast.style.bottom = '-90px';
-        toast.style.opacity = '0';
-    }, 2800);
+        toast.className = 'toast';
+    }, 2700);
 }
 
 function togglePasswordVisibility() {
@@ -94,7 +76,7 @@ function processLogin() {
     if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
         localStorage.setItem('ams_current_role', 'admin');
         switchView('admin');
-        showToast('أهلاً بك في عالم AMS ✨');
+        showToast('أهلاً بك في لوحة تحكم AMS ✨');
     } else {
         localStorage.setItem('ams_current_role', 'user');
         switchView('public');
@@ -104,10 +86,6 @@ function processLogin() {
 
 function logoutAdmin() {
     localStorage.removeItem('ams_current_role');
-    const emailInput = document.getElementById('inputEmail');
-    const passInput = document.getElementById('inputPass');
-    if (emailInput) emailInput.value = '';
-    if (passInput) passInput.value = '';
     switchView('login');
     showToast('تم تسجيل الخروج بنجاح');
 }
@@ -128,29 +106,57 @@ function switchView(viewName) {
         renderMatches('adminMatchesContainer', true);
     } else if (viewName === 'public') {
         if (publicScr) publicScr.style.display = 'block';
-        
         const role = localStorage.getItem('ams_current_role');
         const backBtn = document.getElementById('backAdminBtn');
-        if (backBtn) {
-            backBtn.style.display = (role === 'admin') ? 'inline-block' : 'none';
-        }
-
+        if (backBtn) backBtn.style.display = (role === 'admin') ? 'inline-block' : 'none';
         renderMatches('publicMatchesContainer', false);
     }
+}
+
+// ضغط وتصغير الصور لعدم امتلاء الذاكرة
+function compressImage(file, maxWidth, quality, callback) {
+    if (!file) {
+        callback(null);
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            callback(dataUrl);
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
 }
 
 function uploadSiteLogo(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        currentCustomLogo = e.target.result;
-        localStorage.setItem('ams_custom_logo', currentCustomLogo);
-        applyGlobalLogo();
-        showToast('تم تحديث شعار البطولة بنجاح');
-    };
-    reader.readAsDataURL(file);
+    compressImage(file, 300, 0.75, (compressedData) => {
+        if (compressedData) {
+            currentCustomLogo = compressedData;
+            persistDB();
+            applyGlobalLogo();
+            showToast('تم تحديث شعار البطولة بنجاح');
+        }
+    });
 }
 
 function applyGlobalLogo() {
@@ -172,24 +178,128 @@ function applyGlobalLogo() {
     });
 }
 
+function exportData() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appStorage));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `ams_backup_${new Date().toISOString().slice(0,10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showToast('تم تصدير النسخة الاحتياطية بنجاح 💾');
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            if (parsed.matches) {
+                appStorage = parsed;
+                matchesDB = appStorage.matches;
+                currentCustomLogo = appStorage.customLogo || '';
+                localStorage.setItem('ams_master_db_v8', JSON.stringify(appStorage));
+                applyGlobalLogo();
+                showToast('تم استعادة البيانات بنجاح ✨');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast('ملف النسخ الاحتياطي غير صالح!');
+            }
+        } catch (err) {
+            showToast('خطأ في قراءة الملف!');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// نظام التصويت الفوري المحفوظ والمحمي
+function voteMatch(matchIndex, fighterNum) {
+    if (!appStorage.votes) appStorage.votes = {};
+    if (!appStorage.userVotes) appStorage.userVotes = {};
+
+    let votes = appStorage.votes[matchIndex] || { p1: 0, p2: 0 };
+    let previousVote = appStorage.userVotes[matchIndex];
+
+    if (previousVote) {
+        if (parseInt(previousVote) === fighterNum) {
+            showToast('لقد قمت بالتصويت لهذا المقاتل مسبقاً! 🥊');
+            return;
+        } else {
+            if (previousVote === '1') votes.p1 = Math.max(0, votes.p1 - 1);
+            if (previousVote === '2') votes.p2 = Math.max(0, votes.p2 - 1);
+        }
+    }
+
+    if (fighterNum === 1) votes.p1++;
+    else votes.p2++;
+
+    appStorage.votes[matchIndex] = votes;
+    appStorage.userVotes[matchIndex] = fighterNum.toString();
+    persistDB();
+
+    updateVotingUI(matchIndex);
+    showToast('تم تسجيل تصويتك بنجاح! 🥊');
+}
+
+function updateVotingUI(matchIndex) {
+    const votes = (appStorage.votes && appStorage.votes[matchIndex]) || { p1: 0, p2: 0 };
+    const userVoted = appStorage.userVotes && appStorage.userVotes[matchIndex];
+    const total = votes.p1 + votes.p2;
+    
+    const p1Percent = total === 0 ? 50 : Math.round((votes.p1 / total) * 100);
+    const p2Percent = total === 0 ? 50 : 100 - p1Percent;
+
+    const bar1 = document.getElementById(`voteBar1_${matchIndex}`);
+    const bar2 = document.getElementById(`voteBar2_${matchIndex}`);
+    const txt1 = document.getElementById(`voteText1_${matchIndex}`);
+    const txt2 = document.getElementById(`voteText2_${matchIndex}`);
+    const totalTxt = document.getElementById(`voteTotal_${matchIndex}`);
+    const btn1 = document.getElementById(`voteBtn1_${matchIndex}`);
+    const btn2 = document.getElementById(`voteBtn2_${matchIndex}`);
+
+    if (bar1 && bar2 && txt1 && txt2) {
+        bar1.style.width = `${p1Percent}%`;
+        bar2.style.width = `${p2Percent}%`;
+        txt1.innerText = `${p1Percent}%`;
+        txt2.innerText = `${p2Percent}%`;
+        
+        if (totalTxt) totalTxt.innerText = `إجمالي الأصوات: ${total}`;
+
+        if (btn1 && btn2) {
+            btn1.classList.remove('active-voted');
+            btn2.classList.remove('active-voted');
+            if (userVoted === '1') btn1.classList.add('active-voted');
+            if (userVoted === '2') btn2.classList.add('active-voted');
+        }
+    }
+}
+
+function saveMatchResult(index) {
+    const winnerSelect = document.getElementById(`winnerSelect_${index}`);
+    const methodSelect = document.getElementById(`methodSelect_${index}`);
+    
+    if (!winnerSelect || !methodSelect) return;
+
+    const winner = winnerSelect.value;
+    const method = methodSelect.value;
+
+    if (!winner) {
+        showToast('يرجى تحديد الفائز أولاً');
+        return;
+    }
+
+    matchesDB[index].result = { winner, method };
+    persistDB();
+    showToast('تم حفظ نتيجة النزال بنجاح 🏆');
+    renderMatches('adminMatchesContainer', true);
+}
+
 function saveMatchHandler() {
     const p1Name = document.getElementById('p1Name').value.trim();
-    const p1Nickname = document.getElementById('p1Nickname').value.trim();
-    const p1Club = document.getElementById('p1Club').value.trim();
-    const p1Insta = document.getElementById('p1Insta').value.trim();
-    const p1AgeVal = document.getElementById('p1Age').value.trim();
-    const p1WeightVal = document.getElementById('p1Weight').value.trim();
-    const p1HeightVal = document.getElementById('p1Height').value.trim();
-    const p1File = document.getElementById('p1ImgFile').files[0];
-
     const p2Name = document.getElementById('p2Name').value.trim();
-    const p2Nickname = document.getElementById('p2Nickname').value.trim();
-    const p2Club = document.getElementById('p2Club').value.trim();
-    const p2Insta = document.getElementById('p2Insta').value.trim();
-    const p2AgeVal = document.getElementById('p2Age').value.trim();
-    const p2WeightVal = document.getElementById('p2Weight').value.trim();
-    const p2HeightVal = document.getElementById('p2Height').value.trim();
-    const p2File = document.getElementById('p2ImgFile').files[0];
 
     if (!p1Name || !p2Name) {
         showToast('يرجى إدخال أسماء المتنافسين');
@@ -199,71 +309,49 @@ function saveMatchHandler() {
     const matchData = {
         p1: {
             name: p1Name,
-            nickname: p1Nickname || 'بدون لقب',
-            club: p1Club || 'غير محدد',
-            insta: p1Insta || '',
-            age: p1AgeVal ? p1AgeVal : 'غير محدد',
-            weight: p1WeightVal ? p1WeightVal + ' kg' : 'غير محدد',
-            height: p1HeightVal ? p1HeightVal + ' cm' : 'غير محدد'
+            nickname: document.getElementById('p1Nickname').value.trim() || 'بدون لقب',
+            club: document.getElementById('p1Club').value.trim() || 'غير محدد',
+            insta: document.getElementById('p1Insta').value.trim() || '',
+            age: document.getElementById('p1Age').value.trim() || 'غير محدد',
+            weight: (document.getElementById('p1Weight').value.trim() ? document.getElementById('p1Weight').value.trim() + ' kg' : 'غير محدد'),
+            height: (document.getElementById('p1Height').value.trim() ? document.getElementById('p1Height').value.trim() + ' cm' : 'غير محدد')
         },
         p2: {
             name: p2Name,
-            nickname: p2Nickname || 'بدون لقب',
-            club: p2Club || 'غير محدد',
-            insta: p2Insta || '',
-            age: p2AgeVal ? p2AgeVal : 'غير محدد',
-            weight: p2WeightVal ? p2WeightVal + ' kg' : 'غير محدد',
-            height: p2HeightVal ? p2HeightVal + ' cm' : 'غير محدد'
-        }
+            nickname: document.getElementById('p2Nickname').value.trim() || 'بدون لقب',
+            club: document.getElementById('p2Club').value.trim() || 'غير محدد',
+            insta: document.getElementById('p2Insta').value.trim() || '',
+            age: document.getElementById('p2Age').value.trim() || 'غير محدد',
+            weight: (document.getElementById('p2Weight').value.trim() ? document.getElementById('p2Weight').value.trim() + ' kg' : 'غير محدد'),
+            height: (document.getElementById('p2Height').value.trim() ? document.getElementById('p2Height').value.trim() + ' cm' : 'غير محدد')
+        },
+        result: (editingMatchIndex > -1 && matchesDB[editingMatchIndex].result) ? matchesDB[editingMatchIndex].result : null
     };
 
-    processImagesAndSave(p1File, p2File, matchData);
-}
+    const file1 = document.getElementById('p1ImgFile').files[0];
+    const file2 = document.getElementById('p2ImgFile').files[0];
 
-function processImagesAndSave(file1, file2, matchData) {
-    let p1ImgResult = (editingMatchIndex > -1) ? matchesDB[editingMatchIndex].p1.img : 'https://via.placeholder.com/100';
-    let p2ImgResult = (editingMatchIndex > -1) ? matchesDB[editingMatchIndex].p2.img : 'https://via.placeholder.com/100';
+    compressImage(file1, 400, 0.75, (img1Data) => {
+        compressImage(file2, 400, 0.75, (img2Data) => {
+            let defaultImg = 'https://via.placeholder.com/150';
+            
+            if (editingMatchIndex > -1) {
+                matchData.p1.img = img1Data || matchesDB[editingMatchIndex].p1.img;
+                matchData.p2.img = img2Data || matchesDB[editingMatchIndex].p2.img;
+                matchesDB[editingMatchIndex] = matchData;
+                showToast('تم حفظ التعديلات بنجاح');
+            } else {
+                matchData.p1.img = img1Data || defaultImg;
+                matchData.p2.img = img2Data || defaultImg;
+                matchesDB.push(matchData);
+                showToast('تم نشر المواجهة بنجاح');
+            }
 
-    const saveToDB = () => {
-        matchData.p1.img = p1ImgResult;
-        matchData.p2.img = p2ImgResult;
-
-        if (editingMatchIndex > -1) {
-            matchesDB[editingMatchIndex] = matchData;
-            showToast('تم حفظ التعديلات بنجاح');
-        } else {
-            matchesDB.push(matchData);
-            showToast('تم نشر المواجهة بنجاح');
-        }
-
-        localStorage.setItem('ams_pro_db_v7', JSON.stringify(matchesDB));
-        resetMatchForm();
-        renderMatches('adminMatchesContainer', true);
-    };
-
-    if (file1) {
-        const reader1 = new FileReader();
-        reader1.onload = function(e1) {
-            p1ImgResult = e1.target.result;
-            checkSecond();
-        };
-        reader1.readAsDataURL(file1);
-    } else {
-        checkSecond();
-    }
-
-    function checkSecond() {
-        if (file2) {
-            const reader2 = new FileReader();
-            reader2.onload = function(e2) {
-                p2ImgResult = e2.target.result;
-                saveToDB();
-            };
-            reader2.readAsDataURL(file2);
-        } else {
-            saveToDB();
-        }
-    }
+            persistDB();
+            resetMatchForm();
+            renderMatches('adminMatchesContainer', true);
+        });
+    });
 }
 
 function editMatch(index) {
@@ -290,17 +378,12 @@ function editMatch(index) {
     document.getElementById('formTitleText').innerText = `تعديل النزال #${index + 1}`;
     document.getElementById('submitMatchBtn').innerText = '💾 حفظ التعديلات';
     document.getElementById('cancelEditBtn').style.display = 'inline-block';
-
     document.getElementById('formPanel').scrollIntoView({ behavior: 'smooth' });
 }
 
 function resetMatchForm() {
     editingMatchIndex = -1;
-    document.querySelectorAll('#adminScreen input[type="text"]').forEach(input => input.value = '');
-    document.querySelectorAll('#adminScreen input[type="number"]').forEach(input => input.value = '');
-    document.querySelectorAll('#adminScreen input[type="url"]').forEach(input => input.value = '');
-    document.querySelectorAll('#adminScreen input[type="file"]').forEach(input => input.value = '');
-
+    document.querySelectorAll('#adminScreen input').forEach(input => { if(input.type !== 'file') input.value = ''; });
     document.getElementById('formBadgeText').innerText = '⚔️ إضافة مواجهة جديدة';
     document.getElementById('formTitleText').innerText = 'بيانات النزال المرتقب (VS)';
     document.getElementById('submitMatchBtn').innerText = '🚀 حفظ ونشر النزال';
@@ -310,13 +393,13 @@ function resetMatchForm() {
 function toggleMatchDetails(id) {
     const detailsDiv = document.getElementById(id);
     if (!detailsDiv) return;
-    detailsDiv.style.display = (detailsDiv.style.display === 'block') ? 'none' : 'block';
+    detailsDiv.classList.toggle('open');
 }
 
 function renderInstagramIcon(instaUrl) {
     if (!instaUrl || instaUrl.trim() === "") return '';
     return `
-        <a href="${instaUrl}" target="_blank" class="fighter-insta-badge" title="حساب إنستغرام" onclick="event.stopPropagation();">
+        <a href="${instaUrl}" target="_blank" class="fighter-insta-badge btn-ripple" title="حساب إنستغرام" onclick="event.stopPropagation();">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                 <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
@@ -342,28 +425,87 @@ function renderMatches(containerId, showActions) {
 
     matchesDB.forEach((m, index) => {
         const detailsId = `details_${containerId}_${index}`;
+        const votes = (appStorage.votes && appStorage.votes[index]) || { p1: 0, p2: 0 };
+        const userVoted = appStorage.userVotes && appStorage.userVotes[index];
+        const totalVotes = votes.p1 + votes.p2;
+        const p1Per = totalVotes === 0 ? 50 : Math.round((votes.p1 / totalVotes) * 100);
+        const p2Per = totalVotes === 0 ? 50 : 100 - p1Per;
+
+        const activeBtn1 = userVoted === '1' ? 'active-voted' : '';
+        const activeBtn2 = userVoted === '2' ? 'active-voted' : '';
+
+        let resultBadgeHtml = '';
+        if (m.result) {
+            let winnerName = m.result.winner === 'p1' ? m.p1.name : m.p2.name;
+            resultBadgeHtml = `
+                <div style="text-align: center; padding: 6px; background: rgba(229, 9, 20, 0.1); border-bottom: 1px solid rgba(229, 9, 20, 0.3);">
+                    <span style="font-size: 11px; font-weight: bold; color: #fff;">🏆 الفائز: <span style="color: var(--red-ams);">${winnerName}</span></span>
+                    <div class="win-method-badge">${m.result.method}</div>
+                </div>
+            `;
+        }
+
+        const adminResultControls = showActions ? `
+            <div style="padding: 12px; background: #060609; border-top: 1px solid var(--card-border);">
+                <div style="font-size: 10px; color: var(--silver-muted); margin-bottom: 6px; font-weight: bold;">تسجيل نتيجة النزال الرسمية:</div>
+                <div class="end-match-controls">
+                    <select id="winnerSelect_${index}">
+                        <option value="">حدد الفائز...</option>
+                        <option value="p1" ${m.result && m.result.winner === 'p1' ? 'selected' : ''}>${m.p1.name} (الركن الأيمن)</option>
+                        <option value="p2" ${m.result && m.result.winner === 'p2' ? 'selected' : ''}>${m.p2.name} (الركن الأيسر)</option>
+                    </select>
+                    <select id="methodSelect_${index}">
+                        <option value="KO / TKO" ${m.result && m.result.method === 'KO / TKO' ? 'selected' : ''}>ضربة قاضية (KO / TKO)</option>
+                        <option value="Submission" ${m.result && m.result.method === 'Submission' ? 'selected' : ''}>إخضاع (Submission)</option>
+                        <option value="Decision" ${m.result && m.result.method === 'Decision' ? 'selected' : ''}>قرار الحكام (Decision)</option>
+                    </select>
+                    <button class="btn btn-danger btn-ripple" style="padding: 6px 12px; width: auto; font-size: 10px;" onclick="saveMatchResult(${index})">حفظ النتيجة</button>
+                </div>
+            </div>
+        ` : '';
+
         const actionsHtml = showActions ? `
             <div class="card-actions-bar">
-                <button class="btn-card-action edit" onclick="editMatch(${index})">✏️ تعديل الكتابة والصور</button>
-                <button class="btn-card-action delete" onclick="deleteMatch(${index})">🗑️ حذف</button>
+                <div class="action-buttons-group">
+                    <button class="btn-card-action edit btn-ripple" onclick="editMatch(${index})">✏️ تعديل</button>
+                    <button class="btn-card-action delete btn-ripple" onclick="deleteMatch(${index})">🗑️ حذف</button>
+                </div>
             </div>
         ` : '';
 
         container.innerHTML += `
             <div class="match-card">
                 <div class="match-header-bar">AMS OFFICIAL MATCH #${index + 1}</div>
+                ${resultBadgeHtml}
                 
                 <div class="arena-flex" onclick="toggleMatchDetails('${detailsId}')">
                     <div class="fighter-profile">
-                        <img src="${m.p1.img}" class="fighter-avatar-skew" alt="${m.p1.name}" onerror="this.src='https://via.placeholder.com/100'">
+                        <img src="${m.p1.img}" class="fighter-avatar-skew" alt="${m.p1.name}" onerror="this.src='https://via.placeholder.com/150'">
                     </div>
-
-                    <div class="vs-divider">
-                        <div class="vs-badge-text">VS</div>
-                    </div>
-
+                    <div class="vs-divider"><div class="vs-badge-text">VS</div></div>
                     <div class="fighter-profile">
-                        <img src="${m.p2.img}" class="fighter-avatar-skew" alt="${m.p2.name}" onerror="this.src='https://via.placeholder.com/100'">
+                        <img src="${m.p2.img}" class="fighter-avatar-skew" alt="${m.p2.name}" onerror="this.src='https://via.placeholder.com/150'">
+                    </div>
+                </div>
+
+                <div class="voting-section" onclick="event.stopPropagation();">
+                    <div class="voting-header">
+                        <span class="voting-title">🥊 توقع الفائز في المواجهة</span>
+                        <span id="voteTotal_${index}" class="voting-total">إجمالي الأصوات: ${totalVotes}</span>
+                    </div>
+                    
+                    <div class="voting-buttons">
+                        <button id="voteBtn1_${index}" class="vote-btn corner-red-btn btn-ripple ${activeBtn1}" onclick="voteMatch(${index}, 1)">
+                            ${m.p1.name} (<span id="voteText1_${index}">${p1Per}%</span>)
+                        </button>
+                        <button id="voteBtn2_${index}" class="vote-btn corner-silver-btn btn-ripple ${activeBtn2}" onclick="voteMatch(${index}, 2)">
+                            ${m.p2.name} (<span id="voteText2_${index}">${p2Per}%</span>)
+                        </button>
+                    </div>
+                    
+                    <div class="vote-progress-bar">
+                        <div id="voteBar1_${index}" class="vote-progress-red" style="width: ${p1Per}%;"></div>
+                        <div id="voteBar2_${index}" class="vote-progress-silver" style="width: ${p2Per}%;"></div>
                     </div>
                 </div>
 
@@ -391,6 +533,7 @@ function renderMatches(containerId, showActions) {
                     </div>
                 </div>
 
+                ${adminResultControls}
                 ${actionsHtml}
             </div>
         `;
@@ -400,7 +543,7 @@ function renderMatches(containerId, showActions) {
 function deleteMatch(index) {
     if(confirm('هل أنت متأكد من حذف هذه المواجهة نهائياً؟')) {
         matchesDB.splice(index, 1);
-        localStorage.setItem('ams_pro_db_v7', JSON.stringify(matchesDB));
+        persistDB();
         renderMatches('adminMatchesContainer', true);
         showToast('تم حذف المواجهة بنجاح');
     }
