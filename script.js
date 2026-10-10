@@ -6,19 +6,67 @@ let currentCustomLogo = localStorage.getItem('ams_custom_logo') || '';
 let editingMatchIndex = -1;
 
 window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('inputEmail').value = '';
-    document.getElementById('inputPass').value = '';
-
     applyGlobalLogo();
-    switchView('login');
+
+    // التحقق من حالة تسجيل الدخول السابقة عند فتح الموقع أو عمل Refresh
+    const savedRole = localStorage.getItem('ams_current_role');
+
+    if (savedRole === 'admin') {
+        switchView('admin');
+    } else if (savedRole === 'user') {
+        switchView('public');
+    } else {
+        const emailInput = document.getElementById('inputEmail');
+        const passInput = document.getElementById('inputPass');
+        if (emailInput) emailInput.value = '';
+        if (passInput) passInput.value = '';
+        switchView('login');
+    }
 });
 
 function showToast(message) {
-    const toast = document.getElementById('toastNotification');
+    let toast = document.getElementById('toastNotification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toastNotification';
+        document.body.appendChild(toast);
+    }
+    
+    // فرض الستايل البرمجي بالكامل لضمان ظهوره في الأسفل ومنعه من الصعود للأعلى
+    toast.style.cssText = `
+        position: fixed !important;
+        bottom: -90px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        background: rgba(18, 18, 28, 0.95) !important;
+        backdrop-filter: blur(12px) !important;
+        color: #fff !important;
+        border: 1px solid #e50914 !important;
+        padding: 13px 26px !important;
+        border-radius: 35px !important;
+        font-size: 13px !important;
+        font-weight: bold !important;
+        box-shadow: 0 10px 30px rgba(229, 9, 20, 0.5) !important;
+        z-index: 999999 !important;
+        transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        white-space: nowrap !important;
+        font-family: 'Tajawal', sans-serif !important;
+    `;
+    
     toast.innerText = message;
-    toast.classList.add('show');
+    
+    // إظهار الإشعار من الأسفل
     setTimeout(() => {
-        toast.classList.remove('show');
+        toast.style.bottom = '35px';
+        toast.style.opacity = '1';
+    }, 20);
+
+    // إخفاء الإشعار بعد 2.8 ثانية
+    setTimeout(() => {
+        toast.style.bottom = '-90px';
+        toast.style.opacity = '0';
     }, 2800);
 }
 
@@ -56,24 +104,30 @@ function processLogin() {
 
 function logoutAdmin() {
     localStorage.removeItem('ams_current_role');
-    document.getElementById('inputEmail').value = '';
-    document.getElementById('inputPass').value = '';
+    const emailInput = document.getElementById('inputEmail');
+    const passInput = document.getElementById('inputPass');
+    if (emailInput) emailInput.value = '';
+    if (passInput) passInput.value = '';
     switchView('login');
     showToast('تم تسجيل الخروج بنجاح');
 }
 
 function switchView(viewName) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminScreen').style.display = 'none';
-    document.getElementById('publicScreen').style.display = 'none';
+    const loginScr = document.getElementById('loginScreen');
+    const adminScr = document.getElementById('adminScreen');
+    const publicScr = document.getElementById('publicScreen');
+
+    if (loginScr) loginScr.style.display = 'none';
+    if (adminScr) adminScr.style.display = 'none';
+    if (publicScr) publicScr.style.display = 'none';
 
     if (viewName === 'login') {
-        document.getElementById('loginScreen').style.display = 'flex';
+        if (loginScr) loginScr.style.display = 'flex';
     } else if (viewName === 'admin') {
-        document.getElementById('adminScreen').style.display = 'block';
+        if (adminScr) adminScr.style.display = 'block';
         renderMatches('adminMatchesContainer', true);
     } else if (viewName === 'public') {
-        document.getElementById('publicScreen').style.display = 'block';
+        if (publicScr) publicScr.style.display = 'block';
         
         const role = localStorage.getItem('ams_current_role');
         const backBtn = document.getElementById('backAdminBtn');
