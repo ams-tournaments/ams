@@ -1,7 +1,7 @@
 const ADMIN_EMAIL = "jadkoudmani100@gmail.com";
 const ADMIN_PASS = "Jadkoudmani572010";
 
-let matchesDB = JSON.parse(localStorage.getItem('ams_pro_db_v6')) || [];
+let matchesDB = JSON.parse(localStorage.getItem('ams_pro_db_v7')) || [];
 let currentCustomLogo = localStorage.getItem('ams_custom_logo') || '';
 let editingMatchIndex = -1;
 
@@ -120,12 +120,18 @@ function applyGlobalLogo() {
 
 function saveMatchHandler() {
     const p1Name = document.getElementById('p1Name').value.trim();
+    const p1Nickname = document.getElementById('p1Nickname').value.trim();
+    const p1Club = document.getElementById('p1Club').value.trim();
+    const p1Insta = document.getElementById('p1Insta').value.trim();
     const p1AgeVal = document.getElementById('p1Age').value.trim();
     const p1WeightVal = document.getElementById('p1Weight').value.trim();
     const p1HeightVal = document.getElementById('p1Height').value.trim();
     const p1File = document.getElementById('p1ImgFile').files[0];
 
     const p2Name = document.getElementById('p2Name').value.trim();
+    const p2Nickname = document.getElementById('p2Nickname').value.trim();
+    const p2Club = document.getElementById('p2Club').value.trim();
+    const p2Insta = document.getElementById('p2Insta').value.trim();
     const p2AgeVal = document.getElementById('p2Age').value.trim();
     const p2WeightVal = document.getElementById('p2Weight').value.trim();
     const p2HeightVal = document.getElementById('p2Height').value.trim();
@@ -136,18 +142,28 @@ function saveMatchHandler() {
         return;
     }
 
-    const p1Age = p1AgeVal ? p1AgeVal : 'غير محدد';
-    const p1Weight = p1WeightVal ? p1WeightVal + ' kg' : 'غير محدد';
-    const p1Height = p1HeightVal ? p1HeightVal + ' cm' : 'غير محدد';
+    const matchData = {
+        p1: {
+            name: p1Name,
+            nickname: p1Nickname || 'بدون لقب',
+            club: p1Club || 'غير محدد',
+            insta: p1Insta || '',
+            age: p1AgeVal ? p1AgeVal : 'غير محدد',
+            weight: p1WeightVal ? p1WeightVal + ' kg' : 'غير محدد',
+            height: p1HeightVal ? p1HeightVal + ' cm' : 'غير محدد'
+        },
+        p2: {
+            name: p2Name,
+            nickname: p2Nickname || 'بدون لقب',
+            club: p2Club || 'غير محدد',
+            insta: p2Insta || '',
+            age: p2AgeVal ? p2AgeVal : 'غير محدد',
+            weight: p2WeightVal ? p2WeightVal + ' kg' : 'غير محدد',
+            height: p2HeightVal ? p2HeightVal + ' cm' : 'غير محدد'
+        }
+    };
 
-    const p2Age = p2AgeVal ? p2AgeVal : 'غير محدد';
-    const p2Weight = p2WeightVal ? p2WeightVal + ' kg' : 'غير محدد';
-    const p2Height = p2HeightVal ? p2HeightVal + ' cm' : 'غير محدد';
-
-    processImagesAndSave(p1File, p2File, {
-        p1: { name: p1Name, age: p1Age, weight: p1Weight, height: p1Height },
-        p2: { name: p2Name, age: p2Age, weight: p2Weight, height: p2Height }
-    });
+    processImagesAndSave(p1File, p2File, matchData);
 }
 
 function processImagesAndSave(file1, file2, matchData) {
@@ -166,7 +182,7 @@ function processImagesAndSave(file1, file2, matchData) {
             showToast('تم نشر المواجهة بنجاح');
         }
 
-        localStorage.setItem('ams_pro_db_v6', JSON.stringify(matchesDB));
+        localStorage.setItem('ams_pro_db_v7', JSON.stringify(matchesDB));
         resetMatchForm();
         renderMatches('adminMatchesContainer', true);
     };
@@ -201,11 +217,17 @@ function editMatch(index) {
     const match = matchesDB[index];
 
     document.getElementById('p1Name').value = match.p1.name;
+    document.getElementById('p1Nickname').value = match.p1.nickname !== 'بدون لقب' ? match.p1.nickname : '';
+    document.getElementById('p1Club').value = match.p1.club !== 'غير محدد' ? match.p1.club : '';
+    document.getElementById('p1Insta').value = match.p1.insta || '';
     document.getElementById('p1Age').value = parseInt(match.p1.age) || '';
     document.getElementById('p1Weight').value = parseFloat(match.p1.weight) || '';
     document.getElementById('p1Height').value = parseInt(match.p1.height) || '';
 
     document.getElementById('p2Name').value = match.p2.name;
+    document.getElementById('p2Nickname').value = match.p2.nickname !== 'بدون لقب' ? match.p2.nickname : '';
+    document.getElementById('p2Club').value = match.p2.club !== 'غير محدد' ? match.p2.club : '';
+    document.getElementById('p2Insta').value = match.p2.insta || '';
     document.getElementById('p2Age').value = parseInt(match.p2.age) || '';
     document.getElementById('p2Weight').value = parseFloat(match.p2.weight) || '';
     document.getElementById('p2Height').value = parseInt(match.p2.height) || '';
@@ -222,6 +244,7 @@ function resetMatchForm() {
     editingMatchIndex = -1;
     document.querySelectorAll('#adminScreen input[type="text"]').forEach(input => input.value = '');
     document.querySelectorAll('#adminScreen input[type="number"]').forEach(input => input.value = '');
+    document.querySelectorAll('#adminScreen input[type="url"]').forEach(input => input.value = '');
     document.querySelectorAll('#adminScreen input[type="file"]').forEach(input => input.value = '');
 
     document.getElementById('formBadgeText').innerText = '⚔️ إضافة مواجهة جديدة';
@@ -234,6 +257,19 @@ function toggleMatchDetails(id) {
     const detailsDiv = document.getElementById(id);
     if (!detailsDiv) return;
     detailsDiv.style.display = (detailsDiv.style.display === 'block') ? 'none' : 'block';
+}
+
+function renderInstagramIcon(instaUrl) {
+    if (!instaUrl || instaUrl.trim() === "") return '';
+    return `
+        <a href="${instaUrl}" target="_blank" class="fighter-insta-badge" title="حساب إنستغرام" onclick="event.stopPropagation();">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+        </a>
+    `;
 }
 
 function renderMatches(containerId, showActions) {
@@ -281,16 +317,22 @@ function renderMatches(containerId, showActions) {
                     <div class="details-row">
                         <div class="details-fighter-info">
                             <div class="name">${m.p1.name}</div>
+                            <div class="nickname">${m.p1.nickname}</div>
+                            <div class="info-line">النادي: <span>${m.p1.club}</span></div>
                             <div class="info-line">العمر: <span>${m.p1.age}</span></div>
                             <div class="info-line">الوزن: <span>${m.p1.weight}</span></div>
                             <div class="info-line">الطول: <span>${m.p1.height}</span></div>
+                            ${renderInstagramIcon(m.p1.insta)}
                         </div>
 
                         <div class="details-fighter-info">
                             <div class="name">${m.p2.name}</div>
+                            <div class="nickname">${m.p2.nickname}</div>
+                            <div class="info-line">النادي: <span>${m.p2.club}</span></div>
                             <div class="info-line">العمر: <span>${m.p2.age}</span></div>
                             <div class="info-line">الوزن: <span>${m.p2.weight}</span></div>
                             <div class="info-line">الطول: <span>${m.p2.height}</span></div>
+                            ${renderInstagramIcon(m.p2.insta)}
                         </div>
                     </div>
                 </div>
@@ -304,7 +346,7 @@ function renderMatches(containerId, showActions) {
 function deleteMatch(index) {
     if(confirm('هل أنت متأكد من حذف هذه المواجهة نهائياً؟')) {
         matchesDB.splice(index, 1);
-        localStorage.setItem('ams_pro_db_v6', JSON.stringify(matchesDB));
+        localStorage.setItem('ams_pro_db_v7', JSON.stringify(matchesDB));
         renderMatches('adminMatchesContainer', true);
         showToast('تم حذف المواجهة بنجاح');
     }

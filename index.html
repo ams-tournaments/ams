@@ -1,7 +1,6 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <!-- تم تحديث الإصدار لفرض التحديث على Git وتجاوز الذاكرة المؤقتة -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AMS CHAMPIONSHIPS</title>
@@ -12,8 +11,8 @@
 </head>
 <body>
 
-    <!-- التنبيهات العائمة السريعة -->
-    <div id="toastNotification" class="toast"></div>
+    <!-- التنبيهات العائمة المحسنة (Toast) -->
+    <div id="toastNotification" class="toast-notification"></div>
 
     <!-- 1. شاشة تسجيل الدخول -->
     <div id="loginScreen" class="app-screen">
@@ -85,6 +84,9 @@
                     <div class="fighter-box-input corner-red">
                         <div class="corner-tag red">الركن الأيمن</div>
                         <div class="form-group"><label>الاسم الكامل</label><input type="text" id="p1Name" placeholder="اسم المقاتل"></div>
+                        <div class="form-group"><label>اللقب</label><input type="text" id="p1Nickname" placeholder="مثال: The Iron Man"></div>
+                        <div class="form-group"><label>اسم النادي / الجيم</label><input type="text" id="p1Club" placeholder="مثال: Tiger Gym"></div>
+                        <div class="form-group"><label>رابط إنستغرام</label><input type="url" id="p1Insta" placeholder="https://instagram.com/username"></div>
                         <div class="form-group"><label>العمر</label><input type="number" id="p1Age" placeholder="مثال: 16"></div>
                         <div class="form-group"><label>الوزن (kg)</label><input type="number" step="0.1" id="p1Weight" placeholder="مثال: 63.5"></div>
                         <div class="form-group"><label>الطول (cm)</label><input type="number" id="p1Height" placeholder="مثال: 170"></div>
@@ -95,6 +97,9 @@
                     <div class="fighter-box-input corner-silver">
                         <div class="corner-tag silver">الركن الأيسر</div>
                         <div class="form-group"><label>الاسم الكامل</label><input type="text" id="p2Name" placeholder="اسم المقاتل"></div>
+                        <div class="form-group"><label>اللقب</label><input type="text" id="p2Nickname" placeholder="مثال: The Shadow"></div>
+                        <div class="form-group"><label>اسم النادي / الجيم</label><input type="text" id="p2Club" placeholder="مثال: Lion Gym"></div>
+                        <div class="form-group"><label>رابط إنستغرام</label><input type="url" id="p2Insta" placeholder="https://instagram.com/username"></div>
                         <div class="form-group"><label>العمر</label><input type="number" id="p2Age" placeholder="مثال: 16"></div>
                         <div class="form-group"><label>الوزن (kg)</label><input type="number" step="0.1" id="p2Weight" placeholder="مثال: 63.5"></div>
                         <div class="form-group"><label>الطول (cm)</label><input type="number" id="p2Height" placeholder="مثال: 170"></div>

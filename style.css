@@ -1,4 +1,4 @@
-:root {
+ :root {
     --bg-dark: #000000;
     --card-bg: #07070a;
     --card-border: #161622;
@@ -158,7 +158,7 @@ body {
 .form-group { margin-bottom: 12px; text-align: right; }
 .form-group label { display: block; font-size: 11px; color: var(--silver-main); margin-bottom: 4px; font-weight: 600; }
 
-input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="file"] {
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="file"], input[type="url"] {
     width: 100%; padding: 10px; background: #030305;
     border: 1px solid var(--card-border); color: #fff; border-radius: 8px; font-size: 12px;
 }
@@ -268,13 +268,39 @@ input[type="text"], input[type="email"], input[type="password"], input[type="num
 }
 
 .details-fighter-info .name { 
-    font-weight: 900; color: #fff; font-size: 14px; margin-bottom: 8px; 
+    font-weight: 900; color: #fff; font-size: 14px; margin-bottom: 6px; 
     border-bottom: 1px solid #1c1c2b; padding-bottom: 5px;
 }
+
+.details-fighter-info .nickname {
+    font-size: 11px; color: var(--red-ams); font-weight: bold; margin-bottom: 6px;
+}
+
 .details-fighter-info .info-line { 
     color: var(--silver-main); font-size: 11px; margin-bottom: 4px; font-weight: 600;
 }
 .details-fighter-info .info-line span { color: var(--silver-muted); font-weight: normal; }
+
+/* تنسيق أيقونة إنستغرام التفاعلية */
+.fighter-insta-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    color: #fff;
+    border-radius: 50%;
+    margin-top: 8px;
+    box-shadow: 0 4px 10px rgba(220, 39, 67, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+}
+
+.fighter-insta-badge:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(220, 39, 67, 0.6);
+}
 
 .card-actions-bar {
     display: flex; justify-content: center; gap: 8px; padding: 10px 12px 14px 12px;
