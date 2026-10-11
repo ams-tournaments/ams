@@ -1,8 +1,8 @@
 const ADMIN_EMAIL = "jadkoudmani100@gmail.com";
 const ADMIN_PASS = "Jadkoudmani572010";
 
-// المنيجر الخاص ببيانات التطبيق الموحدة
-let appStorage = JSON.parse(localStorage.getItem('ams_master_db_v8')) || {
+// قاعدة بيانات موحدة وحصينة ضد الضياع ومحدثة بالكامل
+let appStorage = JSON.parse(localStorage.getItem('AMS_ELITE_ARENA_V10')) || {
     matches: [],
     customLogo: '',
     votes: {},
@@ -17,9 +17,9 @@ function persistDB() {
     appStorage.matches = matchesDB;
     appStorage.customLogo = currentCustomLogo;
     try {
-        localStorage.setItem('ams_master_db_v8', JSON.stringify(appStorage));
+        localStorage.setItem('AMS_ELITE_ARENA_V10', JSON.stringify(appStorage));
     } catch (e) {
-        showToast('تنبيه: الذاكرة ممتلئة! حاول رفع صور أصغر');
+        showToast('تنبيه: مساحة التخزين ممتلئة! يرجى تصغير حجم الصور');
     }
 }
 
@@ -80,7 +80,7 @@ function processLogin() {
     } else {
         localStorage.setItem('ams_current_role', 'user');
         switchView('public');
-        showToast('أهلاً بك في عالم AMS ✨');
+        showToast('أهلاً بك في حلبة AMS الرسمية ✨');
     }
 }
 
@@ -113,7 +113,6 @@ function switchView(viewName) {
     }
 }
 
-// ضغط وتصغير الصور لعدم امتلاء الذاكرة
 function compressImage(file, maxWidth, quality, callback) {
     if (!file) {
         callback(null);
@@ -201,7 +200,7 @@ function importData(event) {
                 appStorage = parsed;
                 matchesDB = appStorage.matches;
                 currentCustomLogo = appStorage.customLogo || '';
-                localStorage.setItem('ams_master_db_v8', JSON.stringify(appStorage));
+                localStorage.setItem('AMS_ELITE_ARENA_V10', JSON.stringify(appStorage));
                 applyGlobalLogo();
                 showToast('تم استعادة البيانات بنجاح ✨');
                 setTimeout(() => location.reload(), 800);
@@ -215,7 +214,6 @@ function importData(event) {
     reader.readAsText(file);
 }
 
-// نظام التصويت الفوري المحفوظ والمحمي
 function voteMatch(matchIndex, fighterNum) {
     if (!appStorage.votes) appStorage.votes = {};
     if (!appStorage.userVotes) appStorage.userVotes = {};
@@ -384,9 +382,9 @@ function editMatch(index) {
 function resetMatchForm() {
     editingMatchIndex = -1;
     document.querySelectorAll('#adminScreen input').forEach(input => { if(input.type !== 'file') input.value = ''; });
-    document.getElementById('formBadgeText').innerText = '⚔️ إضافة مواجهة جديدة';
-    document.getElementById('formTitleText').innerText = 'بيانات النزال المرتقب (VS)';
-    document.getElementById('submitMatchBtn').innerText = '🚀 حفظ ونشر النزال';
+    document.getElementById('formBadgeText').innerText = '⚔️ إنشاء مواجهة جديدة';
+    document.getElementById('formTitleText').innerText = 'بيانات النزال المرتقب (Red vs Silver)';
+    document.getElementById('submitMatchBtn').innerText = '🚀 نشر النزال في الحلبة';
     document.getElementById('cancelEditBtn').style.display = 'none';
 }
 
@@ -416,8 +414,8 @@ function renderMatches(containerId, showActions) {
 
     if (matchesDB.length === 0) {
         container.innerHTML = `
-            <div style="text-align: center; color: var(--silver-muted); padding: 30px; background: var(--card-bg); border-radius: 12px; border: 1px dashed var(--card-border); grid-column: 1 / -1;">
-                لا توجد مواجهات مضافة حالياً.
+            <div style="text-align: center; color: var(--silver-muted); padding: 40px; background: var(--card-bg); border-radius: 16px; border: 1px dashed var(--card-border); grid-column: 1 / -1;">
+                لا توجد مواجهات نشطة في الحلبة حالياً.
             </div>
         `;
         return;
@@ -438,8 +436,8 @@ function renderMatches(containerId, showActions) {
         if (m.result) {
             let winnerName = m.result.winner === 'p1' ? m.p1.name : m.p2.name;
             resultBadgeHtml = `
-                <div style="text-align: center; padding: 6px; background: rgba(229, 9, 20, 0.1); border-bottom: 1px solid rgba(229, 9, 20, 0.3);">
-                    <span style="font-size: 11px; font-weight: bold; color: #fff;">🏆 الفائز: <span style="color: var(--red-ams);">${winnerName}</span></span>
+                <div style="text-align: center; padding: 6px; background: rgba(255, 30, 39, 0.12); border-bottom: 1px solid rgba(255, 30, 39, 0.3);">
+                    <span style="font-size: 11px; font-weight: bold; color: #fff;">🏆 بطل النزال: <span style="color: var(--red-ams);">${winnerName}</span></span>
                     <div class="win-method-badge">${m.result.method}</div>
                 </div>
             `;
@@ -451,8 +449,8 @@ function renderMatches(containerId, showActions) {
                 <div class="end-match-controls">
                     <select id="winnerSelect_${index}">
                         <option value="">حدد الفائز...</option>
-                        <option value="p1" ${m.result && m.result.winner === 'p1' ? 'selected' : ''}>${m.p1.name} (الركن الأيمن)</option>
-                        <option value="p2" ${m.result && m.result.winner === 'p2' ? 'selected' : ''}>${m.p2.name} (الركن الأيسر)</option>
+                        <option value="p1" ${m.result && m.result.winner === 'p1' ? 'selected' : ''}>${m.p1.name} (الركن الأحمر)</option>
+                        <option value="p2" ${m.result && m.result.winner === 'p2' ? 'selected' : ''}>${m.p2.name} (الركن الفضي)</option>
                     </select>
                     <select id="methodSelect_${index}">
                         <option value="KO / TKO" ${m.result && m.result.method === 'KO / TKO' ? 'selected' : ''}>ضربة قاضية (KO / TKO)</option>
@@ -467,7 +465,7 @@ function renderMatches(containerId, showActions) {
         const actionsHtml = showActions ? `
             <div class="card-actions-bar">
                 <div class="action-buttons-group">
-                    <button class="btn-card-action edit btn-ripple" onclick="editMatch(${index})">✏️ تعديل</button>
+                    <button class="btn-card-action edit btn-ripple" onclick="editMatch(${index})">✏️ تعديل النزال</button>
                     <button class="btn-card-action delete btn-ripple" onclick="deleteMatch(${index})">🗑️ حذف</button>
                 </div>
             </div>
@@ -475,7 +473,7 @@ function renderMatches(containerId, showActions) {
 
         container.innerHTML += `
             <div class="match-card">
-                <div class="match-header-bar">AMS OFFICIAL MATCH #${index + 1}</div>
+                <div class="match-header-bar">AMS ARENA MATCH #${index + 1}</div>
                 ${resultBadgeHtml}
                 
                 <div class="arena-flex" onclick="toggleMatchDetails('${detailsId}')">
@@ -490,7 +488,7 @@ function renderMatches(containerId, showActions) {
 
                 <div class="voting-section" onclick="event.stopPropagation();">
                     <div class="voting-header">
-                        <span class="voting-title">🥊 توقع الفائز في المواجهة</span>
+                        <span class="voting-title">🥊 توقع فائز المعركة</span>
                         <span id="voteTotal_${index}" class="voting-total">إجمالي الأصوات: ${totalVotes}</span>
                     </div>
                     
