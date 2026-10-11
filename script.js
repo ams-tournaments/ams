@@ -2,9 +2,11 @@ const ADMIN_EMAIL = "jadkoudmani100@gmail.com";
 const ADMIN_PASS = "Jadkoudmani572010";
 
 // قاعدة بيانات موحدة وحصينة ضد الضياع ومحدثة بالكامل
-let appStorage = JSON.parse(localStorage.getItem('AMS_ELITE_ARENA_V10')) || {
+let appStorage = JSON.parse(localStorage.getItem('AMS_MASTER_GLOBAL_V12')) || {
     matches: [],
     customLogo: '',
+    siteTitle: 'AMS CHAMPIONSHIPS',
+    tickerText: '🔥 أهلاً بكم في البطولات الرسمية لـ AMS CHAMPIONSHIPS • توقع النزال وصوّت لمقاتلك المفضّل الآن!',
     votes: {},
     userVotes: {}
 };
@@ -17,14 +19,15 @@ function persistDB() {
     appStorage.matches = matchesDB;
     appStorage.customLogo = currentCustomLogo;
     try {
-        localStorage.setItem('AMS_ELITE_ARENA_V10', JSON.stringify(appStorage));
+        localStorage.setItem('AMS_MASTER_GLOBAL_V12', JSON.stringify(appStorage));
     } catch (e) {
-        showToast('تنبيه: مساحة التخزين ممتلئة! يرجى تصغير حجم الصور');
+        showToast('⚠️ تحذير: الذاكرة ممتلئة! يرجى تصغير حجم الصور', '⚠️');
     }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
     applyGlobalLogo();
+    applyCustomTitles();
     const savedRole = localStorage.getItem('ams_current_role');
 
     if (savedRole === 'admin') {
@@ -36,20 +39,20 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function showToast(message) {
+function showToast(message, icon = '✨') {
     let toast = document.getElementById('toastNotification');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toastNotification';
-        document.body.appendChild(toast);
-    }
+    let toastText = document.getElementById('toastText');
+    let toastIcon = document.getElementById('toastIcon');
     
-    toast.innerText = message;
-    toast.className = 'toast show';
+    if (!toast) return;
+    
+    toastText.innerText = message;
+    toastIcon.innerText = icon;
+    toast.className = 'toast-elite show';
     
     setTimeout(() => {
-        toast.className = 'toast';
-    }, 2700);
+        toast.className = 'toast-elite';
+    }, 2800);
 }
 
 function togglePasswordVisibility() {
@@ -69,25 +72,25 @@ function processLogin() {
     const pass = document.getElementById('inputPass').value.trim();
 
     if (!email || !pass) {
-        showToast('يرجى كتابة البريد الإلكتروني وكلمة المرور');
+        showToast('يرجى كتابة البريد وكلمة المرور', '⚠️');
         return;
     }
 
     if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
         localStorage.setItem('ams_current_role', 'admin');
         switchView('admin');
-        showToast('أهلاً بك في لوحة تحكم AMS ✨');
+        showToast('أهلاً بك في لوحة تحكم الأدمن 👑', '👑');
     } else {
         localStorage.setItem('ams_current_role', 'user');
         switchView('public');
-        showToast('أهلاً بك في حلبة AMS الرسمية ✨');
+        showToast('مرحباً بك في حلبة AMS الرسمية 🥊', '🥊');
     }
 }
 
 function logoutAdmin() {
     localStorage.removeItem('ams_current_role');
     switchView('login');
-    showToast('تم تسجيل الخروج بنجاح');
+    showToast('تم تسجيل الخروج بنجاح 👋', '👋');
 }
 
 function switchView(viewName) {
@@ -153,7 +156,7 @@ function uploadSiteLogo(event) {
             currentCustomLogo = compressedData;
             persistDB();
             applyGlobalLogo();
-            showToast('تم تحديث شعار البطولة بنجاح');
+            showToast('تم تحديث الشعار وحفظه بنجاح 🏆', '🏆');
         }
     });
 }
@@ -177,6 +180,31 @@ function applyGlobalLogo() {
     });
 }
 
+function saveCustomTitles() {
+    const siteTitleVal = document.getElementById('customSiteTitleInput').value.trim();
+    const tickerVal = document.getElementById('customTickerInput').value.trim();
+
+    if (siteTitleVal) appStorage.siteTitle = siteTitleVal;
+    if (tickerVal) appStorage.tickerText = tickerVal;
+
+    persistDB();
+    applyCustomTitles();
+    showToast('تم حفظ العناوين بنجاح ✨', '✨');
+}
+
+function applyCustomTitles() {
+    if (appStorage.siteTitle) {
+        const publicTitle = document.getElementById('dynPublicMainTitle');
+        const loginTitle = document.getElementById('dynLoginTitle');
+        if (publicTitle) publicTitle.innerText = appStorage.siteTitle;
+        if (loginTitle) loginTitle.innerText = appStorage.siteTitle;
+    }
+    if (appStorage.tickerText) {
+        const ticker = document.getElementById('dynTickerText');
+        if (ticker) ticker.innerText = appStorage.tickerText;
+    }
+}
+
 function exportData() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appStorage));
     const downloadAnchor = document.createElement('a');
@@ -185,7 +213,7 @@ function exportData() {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    showToast('تم تصدير النسخة الاحتياطية بنجاح 💾');
+    showToast('تم تصدير النسخة الاحتياطية بنجاح 💾', '💾');
 }
 
 function importData(event) {
@@ -200,15 +228,16 @@ function importData(event) {
                 appStorage = parsed;
                 matchesDB = appStorage.matches;
                 currentCustomLogo = appStorage.customLogo || '';
-                localStorage.setItem('AMS_ELITE_ARENA_V10', JSON.stringify(appStorage));
+                localStorage.setItem('AMS_MASTER_GLOBAL_V12', JSON.stringify(appStorage));
                 applyGlobalLogo();
-                showToast('تم استعادة البيانات بنجاح ✨');
+                applyCustomTitles();
+                showToast('تمت استعادة البيانات بنجاح ✨', '✨');
                 setTimeout(() => location.reload(), 800);
             } else {
-                showToast('ملف النسخ الاحتياطي غير صالح!');
+                showToast('ملف النسخ الاحتياطي غير صالح!', '❌');
             }
         } catch (err) {
-            showToast('خطأ في قراءة الملف!');
+            showToast('خطأ في قراءة الملف!', '❌');
         }
     };
     reader.readAsText(file);
@@ -223,7 +252,7 @@ function voteMatch(matchIndex, fighterNum) {
 
     if (previousVote) {
         if (parseInt(previousVote) === fighterNum) {
-            showToast('لقد قمت بالتصويت لهذا المقاتل مسبقاً! 🥊');
+            showToast('لقد قمت بالتصويت لهذا المقاتل مسبقاً! 🥊', '🥊');
             return;
         } else {
             if (previousVote === '1') votes.p1 = Math.max(0, votes.p1 - 1);
@@ -239,7 +268,7 @@ function voteMatch(matchIndex, fighterNum) {
     persistDB();
 
     updateVotingUI(matchIndex);
-    showToast('تم تسجيل تصويتك بنجاح! 🥊');
+    showToast('تم تسجيل تصويتك بنجاح! 🔥', '🔥');
 }
 
 function updateVotingUI(matchIndex) {
@@ -285,13 +314,13 @@ function saveMatchResult(index) {
     const method = methodSelect.value;
 
     if (!winner) {
-        showToast('يرجى تحديد الفائز أولاً');
+        showToast('يرجى تحديد الفائز أولاً', '⚠️');
         return;
     }
 
     matchesDB[index].result = { winner, method };
     persistDB();
-    showToast('تم حفظ نتيجة النزال بنجاح 🏆');
+    showToast('تم حفظ نتيجة النزال بنجاح 🏆', '🏆');
     renderMatches('adminMatchesContainer', true);
 }
 
@@ -300,7 +329,7 @@ function saveMatchHandler() {
     const p2Name = document.getElementById('p2Name').value.trim();
 
     if (!p1Name || !p2Name) {
-        showToast('يرجى إدخال أسماء المتنافسين');
+        showToast('يرجى إدخال أسماء المتنافسين', '⚠️');
         return;
     }
 
@@ -337,12 +366,12 @@ function saveMatchHandler() {
                 matchData.p1.img = img1Data || matchesDB[editingMatchIndex].p1.img;
                 matchData.p2.img = img2Data || matchesDB[editingMatchIndex].p2.img;
                 matchesDB[editingMatchIndex] = matchData;
-                showToast('تم حفظ التعديلات بنجاح');
+                showToast('تم حفظ التعديلات بنجاح ✨', '✨');
             } else {
                 matchData.p1.img = img1Data || defaultImg;
                 matchData.p2.img = img2Data || defaultImg;
                 matchesDB.push(matchData);
-                showToast('تم نشر المواجهة بنجاح');
+                showToast('تم نشر المواجهة بنجاح 🚀', '🚀');
             }
 
             persistDB();
@@ -543,6 +572,6 @@ function deleteMatch(index) {
         matchesDB.splice(index, 1);
         persistDB();
         renderMatches('adminMatchesContainer', true);
-        showToast('تم حذف المواجهة بنجاح');
+        showToast('تم حذف المواجهة بنجاح 🗑️', '🗑️');
     }
 }

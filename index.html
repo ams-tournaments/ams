@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AMS CHAMPIONSHIPS | ELITE ARENA</title>
+    <title>AMS CHAMPIONSHIPS | OFFICIAL ARENA</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,21 +18,25 @@
     <div class="live-ticker-bar">
         <div class="ticker-wrapper">
             <span class="live-badge">LIVE ARENA</span>
-            <p>مرحباً بك في البطولات الرسمية لـ AMS CHAMPIONSHIPS • توقع النزال وصوّت لمقاتلك المفضل الآن!</p>
+            <p id="dynTickerText">🔥 أهلاً بكم في البطولات الرسمية لـ AMS CHAMPIONSHIPS • توقع النزال وصوّت لمقاتلك المفضّل الآن!</p>
         </div>
     </div>
 
-    <div id="toastNotification" class="toast"></div>
+    <!-- الإشعارات العائمة -->
+    <div id="toastNotification" class="toast-elite">
+        <span id="toastIcon">✨</span>
+        <span id="toastText">تمت العملية بنجاح</span>
+    </div>
 
-    <!-- شاشة تسجيل الدخول -->
+    <!-- 1. شاشة تسجيل الدخول -->
     <div id="loginScreen" class="app-screen">
-        <div class="glass-card-elite">
+        <div class="login-container-elite">
             <div id="loginLogoPreview" class="ams-logo-circle large">
                 <div class="logo-ams-text">A<span>M</span>S</div>
                 <div class="red-line"></div>
             </div>
-            <h2>AMS CHAMPIONSHIPS</h2>
-            <p>البوابة الرسمية لإدارة ومتابعة أقوى النزالات</p>
+            <h2 id="dynLoginTitle">AMS CHAMPIONSHIPS</h2>
+            <p id="dynLoginSub">بوابتك الرسمية لإدارة ومتابعة أقوى المعارك</p>
             
             <div class="form-group">
                 <label>البريد الإلكتروني</label>
@@ -49,11 +53,11 @@
                 </div>
             </div>
 
-            <button class="btn btn-danger btn-ripple" onclick="processLogin()">دخول الحلبة</button>
+            <button class="btn btn-danger btn-ripple" onclick="processLogin()">🚀 دخول الحلبة الرسمية</button>
         </div>
     </div>
 
-    <!-- لوحة تحكم الأدمن -->
+    <!-- 2. لوحة تحكم الأدمن -->
     <div id="adminScreen" class="app-screen" style="display: none;">
         <header class="main-header">
             <div class="logo-area">
@@ -62,22 +66,23 @@
                     <div class="red-line"></div>
                 </div>
                 <div class="brand-title">
-                    <h1>AMS COMMAND</h1>
+                    <h1 id="dynAdminHeaderTitle">AMS COMMAND</h1>
                     <span class="sub-title">لوحة التحكم الإدارية</span>
                 </div>
             </div>
             <div class="header-actions">
-                <button class="btn-nav btn-ripple" onclick="switchView('public')">🌐 الحلبة العامة</button>
+                <button class="btn-nav btn-ripple" onclick="switchView('public')">🌐 عرض الحلبة العامة</button>
                 <button class="btn-logout btn-ripple" onclick="logoutAdmin()">خروج</button>
             </div>
         </header>
 
         <main class="main-container">
+            <!-- التحكم بالنصوص وشعار المنصة -->
             <div class="admin-top-grid">
                 <div class="glass-panel">
-                    <div class="panel-title-badge red">⚙️ هوية المنصة</div>
+                    <div class="panel-title-badge red">⚙️ هوية وشعار المنصة</div>
                     <h3>شعار البطولة (AMS Logo)</h3>
-                    <p class="panel-desc">اختر صورة الشعار لتحديثه فوراً لجميع الزوار.</p>
+                    <p class="panel-desc">اختر صورة الشعار لتحديثه وحفظه بشكل دائم لجميع الزوار.</p>
                     <label class="custom-file-upload btn-ripple">
                         📁 اختر صورة الشعار
                         <input type="file" id="siteLogoInput" accept="image/*" onchange="uploadSiteLogo(event)">
@@ -85,19 +90,36 @@
                 </div>
 
                 <div class="glass-panel">
-                    <div class="panel-title-badge red">💾 إدارة قاعدة البيانات</div>
-                    <h3>النسخ الاحتياطي (Cloud Sync)</h3>
-                    <p class="panel-desc">حفظ وتصدير بيانات النزالات والتصويتات بملف واحد.</p>
-                    <div class="backup-actions">
-                        <button class="btn btn-secondary btn-ripple" onclick="exportData()">📥 تصدير البيانات</button>
-                        <label class="custom-file-upload btn-ripple" style="text-align: center; display: block;">
-                            📤 استعادة البيانات
-                            <input type="file" id="importFileInput" accept=".json" onchange="importData(event)">
-                        </label>
+                    <div class="panel-title-badge red">✏️ تخصيص أسماء وعناوين الأقسام</div>
+                    <h3>تعديل النصوص الرئيسية</h3>
+                    <p class="panel-desc">غير العناوين الظاهرة للزوار في الموقع بضغطة زر.</p>
+                    <div class="form-group">
+                        <label>عنوان الموقع الرئيسي</label>
+                        <input type="text" id="customSiteTitleInput" class="glass-input" placeholder="مثال: AMS CHAMPIONSHIPS">
                     </div>
+                    <div class="form-group">
+                        <label>نص شريط الأخبار المباشر</label>
+                        <input type="text" id="customTickerInput" class="glass-input" placeholder="أدخل نص الشريط الإخباري">
+                    </div>
+                    <button class="btn btn-secondary btn-ripple" onclick="saveCustomTitles()">💾 حفظ الأسماء والعناوين</button>
                 </div>
             </div>
 
+            <!-- لوحة النسخ الاحتياطي -->
+            <div class="glass-panel">
+                <div class="panel-title-badge red">💾 إدارة قاعدة البيانات والتخزين</div>
+                <h3>النسخ الاحتياطي واستعادة البيانات</h3>
+                <p class="panel-desc">قم بحفظ نسخة كاملة من النزالات، الشعار، والأصوات في ملف واحد.</p>
+                <div class="backup-actions-row">
+                    <button class="btn btn-secondary btn-ripple" onclick="exportData()">📥 تصدير البيانات</button>
+                    <label class="custom-file-upload btn-ripple" style="margin: 0;">
+                        📤 استعادة البيانات
+                        <input type="file" id="importFileInput" accept=".json" onchange="importData(event)">
+                    </label>
+                </div>
+            </div>
+
+            <!-- نموذج إضافة ونشر نزال -->
             <div class="glass-panel" id="formPanel">
                 <div class="panel-title-badge"><span id="formBadgeText">⚔️ إنشاء مواجهة جديدة</span></div>
                 <h3 id="formTitleText">بيانات النزال المرتقب (Red vs Silver)</h3>
@@ -154,7 +176,7 @@
         </main>
     </div>
 
-    <!-- واجهة الزوار -->
+    <!-- 3. واجهة الزوار -->
     <div id="publicScreen" class="app-screen" style="display: none;">
         <header class="main-header">
             <div class="logo-area">
@@ -163,8 +185,8 @@
                     <div class="red-line"></div>
                 </div>
                 <div class="brand-title">
-                    <h1>AMS CHAMPIONSHIPS</h1>
-                    <span class="sub-title">حلبة المواجهات الكبرى</span>
+                    <h1 id="dynPublicMainTitle">AMS CHAMPIONSHIPS</h1>
+                    <span class="sub-title">حلبة المواجهات والبطولات الكبرى</span>
                 </div>
             </div>
             <div class="header-actions">
@@ -175,7 +197,7 @@
 
         <main class="main-container">
             <div class="section-header">
-                <h2>جدول المواجهات الرسمية الحالية</h2>
+                <h2 id="dynMatchesSectionTitle">جدول المواجهات الرسمية الحالية</h2>
                 <div class="header-line"></div>
             </div>
 
